@@ -4,6 +4,9 @@ export default class Move {
 
   constructor (keys, ball, camera, orBall) {
     const moving = ((keys.left.isDown) || (keys.right.isDown) || (keys.up.isDown) || (keys.down.isDown)) || ((ball.velocity.x > 0.001) || (ball.velocity.y > 0.001) || (ball.velocity.z > 0.001));
+    if (keys.space.isDown) {
+      ball.applyForceY(0.1);
+    }
     if (moving) {
       this.addVel(keys, ball);
     }
@@ -14,33 +17,51 @@ export default class Move {
   addVel(keys, ball) {
 
     if (keys.up.isDown) {
-      const vel = (ball.velocity.x - 0.025 > -2) ? ball.velocity.x - 0.025 : -2;
-      ball.setVelocityX(vel);
+      // const vel = (ball.velocity.x - 0.025 > -2) ? ball.velocity.x - 0.025 : -2;
+      // forwards/backwards
+      if (ball.velocity.x > 0) {
+        ball.applyForceX(-0.07);
+      }else if (ball.velocity.x > -10) {
+        ball.applyForceX(-0.03);
+      }
     } else if (keys.down.isDown) {
-      const vel = (ball.velocity.x + 0.025 < 2) ? ball.velocity.x + 0.025 : 2;
-      ball.setVelocityX(vel);   
+      // const vel = (ball.velocity.x + 0.025 < 2) ? ball.velocity.x + 0.025 : 2;
+      if (ball.velocity.x < 0) {
+        ball.applyForceX(0.07);
+      }else if (ball.velocity.x < 10) {
+        ball.applyForceX(0.03);
+      }
     }
     
     if (keys.right.isDown) {
-      const vel = (ball.velocity.z - 0.025 > -2) ? ball.velocity.z - 0.025 : -2;
-      ball.setVelocityZ(vel);
+      // const vel = (ball.velocity.z - 0.025 > -2) ? ball.velocity.z - 0.025 : -2;
+      if (ball.velocity.z > 0) {
+        ball.applyForceZ(-0.07)
+      } else if (ball.velocity.z > -10) {
+        ball.applyForceZ(-0.03);
+      }
     } else if (keys.left.isDown) {
-      const vel = (ball.velocity.z + 0.025 < 2) ? ball.velocity.z + 0.025 : 2;
-      ball.setVelocityZ(vel);
+      // const vel = (ball.velocity.z + 0.025 < 2) ? ball.velocity.z + 0.025 : 2;
+      if (ball.velocity.z < 0) {
+        ball.applyForceZ(0.07)
+      } else if (ball.velocity.z < 10) {
+        ball.applyForceZ(0.03);
+      }
     }
     
+    // Making ball move
     if (!((keys.left.isDown) || (keys.right.isDown) || (keys.up.isDown) || (keys.down.isDown))) {
       const { x, y, z } = ball.velocity;
 
-      if (Math.abs(x) < 0.3) {
-        ball.setVelocityX(0);
-      }
-      if (Math.abs(z) < 0.3) {
-        ball.setVelocityZ(0);
-      }
-      if (Math.abs(y) < 0.3) {
-        ball.setVelocityY(0);
-      }
+      // if (Math.abs(x) < 0.3) {
+      //   ball.setVelocityX(0);
+      // }
+      // if (Math.abs(z) < 0.3) {
+      //   ball.setVelocityZ(0);
+      // }
+      // if (Math.abs(y) < 0.3) {
+      //   ball.setVelocityY(0);
+      // }
     }
   }
 
