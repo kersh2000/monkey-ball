@@ -29,8 +29,8 @@ export default class MainScene extends Scene3D {
 
   update() {
 
-    // new Move(this.cursors, this.ball.body, this.third.camera);
-    new Rotate(this.cursors, this.ball.body, this.third.scene);
+    new Move(this.cursors, this.ball.body, this.third.camera);
+    // new Rotate(this.cursors, this.ball.body, this.third.scene);
 
   }
 }
