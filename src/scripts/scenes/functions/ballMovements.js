@@ -18,7 +18,7 @@ export default class Move {
 
     if (keys.up.isDown) {
       // const vel = (ball.velocity.x - 0.025 > -2) ? ball.velocity.x - 0.025 : -2;
-      // forwards/backwards
+      // forwards/backward
       if (ball.velocity.x > 0) {
         ball.applyForceX(-0.07);
       }else if (ball.velocity.x > -10) {

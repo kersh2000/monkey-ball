@@ -3,6 +3,10 @@ import Move from './functions/ballMovements';
 import Rotate from './functions/stageRotations';
 import { ThirdPersonControls, THREE } from '@enable3d/phaser-extension';
 
+const stages = [
+  {}
+];
+
 export default class MainScene extends Scene3D {
   constructor() {
     super({ key: 'MainScene' })
@@ -12,7 +16,7 @@ export default class MainScene extends Scene3D {
     this.scoreText;
     this.instructionsText
     this.timerText
-
+    this.score = 0;
   }
 
   init() {
@@ -23,7 +27,7 @@ export default class MainScene extends Scene3D {
   }
 
   create() {
-    this.scoreText = this.add.text(10, 0, "Score: ", { fontSize: "40px", fill: "#000" })
+    this.scoreText = this.add.text(10, 0, `Score: ${this.score}`, { fontSize: "40px", fill: "#000" })
     this.instructionsText = this.add.text(10,0, "\n\nInstructions:  WASD to trigger camera movements  \n\nArrow keys to move ball",{fontSize: "20px", fill: "#000"})
 
     //this.goalTimer = this.add.image(0,200, 'goalTimer')
@@ -154,6 +158,7 @@ export default class MainScene extends Scene3D {
 
     // adds a sphere with physics
     this.ball = this.third.physics.add.sphere({ radius: 0.5, x: 0, y:2 }, { lambert: { color: 0xff0000, transparent: true, opacity: 0.6 } }) //position of box init+colours
+    this.goal = this.third.physics.add.box({ width: 1, height: 0.1, depth: 1 , x: -17, z: 1, y: 0.1}, { lambert: { color: 0xff00ff } })
 
     this.third.lights.directionalLight({intensity: 0});
     this.third.lights.hemisphereLight({intensity: 0});
