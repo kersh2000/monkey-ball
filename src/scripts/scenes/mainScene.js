@@ -24,6 +24,7 @@ export default class MainScene extends Scene3D {
     this.third.load.preload('grass', '../../../assets/img/grass.jpg');
     this.third.load.preload('map', '../../../assets/heightmap/map1.png');
     this.third.load.preload('goalTimer', "../../../assets/Goal_Green_no_shad.png")
+    this.third.load.preload('mapTest', "../../../assets/heightmap/mapTest.png")
   }
 
   create() {
@@ -34,7 +35,7 @@ export default class MainScene extends Scene3D {
 
 
 
-    this.third.physics.debug.enable()
+    // this.third.physics.debug.enable()
     //importing keyboard inputs for movement of the monkeyball/character
     this.cursors = {
       up: this.input.keyboard.addKey('up'),
@@ -48,28 +49,7 @@ export default class MainScene extends Scene3D {
       space: this.input.keyboard.addKey(32)
     }
     // creates a nice scene
-    this.third.warpSpeed('light', 'camera', 'sky');
-
-    // const grass = this.third.load.texture('grass').then(grass => {
-    //   grass.wrapS = THREE.RepeatWrapping;
-    //   grass.wrapT = THREE.RepeatWrapping;
-    //   grass.repeat.set(4, 4);
-    // });
-  
-    // this.third.load.texture('map').then(heightmap => {
-    //   const mesh = this.third.heightMap.add(heightmap)
-    //   if (mesh) {
-    //     // add custom material or a texture
-    //     mesh.material = new THREE.MeshPhongMaterial({ map: grass })
-
-    //     // we position, scale, rotate etc. the mesh before adding physics to it
-    //     mesh.scale.set(2, 2, 2)
-
-    //     // @ts-ignore
-    //     this.third.physics.add.existing(mesh, { mass: 0, collisionFlags: 1 })
-    //   }
-    // });
-
+    this.third.warpSpeed('camera', 'sky');
 
     this.third.load.texture('grass').then(grass => {
       grass.wrapS = grass.wrapT = 1000 // RepeatWrapping
@@ -149,9 +129,9 @@ export default class MainScene extends Scene3D {
           map: grass
         }
       })
-    })
 
-    
+
+    })
 
     // Makes platform tilt to left/right
     this.third.scene.rotateX(0.0);
@@ -160,8 +140,25 @@ export default class MainScene extends Scene3D {
     this.ball = this.third.physics.add.sphere({ radius: 0.5, x: 0, y:2 }, { lambert: { color: 0xff0000, transparent: true, opacity: 0.6 } }) //position of box init+colours
     this.goal = this.third.physics.add.box({ width: 1, height: 0.1, depth: 1 , x: -17, z: 1, y: 0.1}, { lambert: { color: 0xff00ff } })
 
-    this.third.lights.directionalLight({intensity: 0});
-    this.third.lights.hemisphereLight({intensity: 0});
+    this.third.lights.hemisphereLight({ intensity: 1})
+
+    this.third.directional = this.third.lights.directionalLight({ intensity: 0.5 })
+    this.third.directional.position.set(-30, 50, 30)
+
+    this.third.renderer.shadowMap.type = THREE.PCFShadowMap;
+
+    this.third.directional.shadow.mapSize.width = 10000;
+    this.third.directional.shadow.mapSize.height = 10000;
+
+    const d = 100;
+
+    this.third.directional.shadow.camera.left = - d;
+    this.third.directional.shadow.camera.right = d;
+    this.third.directional.shadow.camera.top = d;
+    this.third.directional.shadow.camera.bottom = - d;
+
+    this.third.directional.shadow.camera.far = 35000;
+    this.third.directional.shadow.bias = - 0;
 
   }
 
