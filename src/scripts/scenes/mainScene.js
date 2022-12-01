@@ -17,7 +17,7 @@ export default class MainScene extends Scene3D {
     this.timerText;
     this.livesText;
     this.score = 0;
-    this.stageNum = 0;
+    this.stageNum = 1;
     this.lives = 4;
     this.soundOn = false;
     this.cameraDirection = { face: 'no' }

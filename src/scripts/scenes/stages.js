@@ -78,6 +78,32 @@ const obj = {
           height: 1,
           depth: 1,
           y: 0,
+          x: -7,
+          z: 0,
+          collisionFlags: 2,
+          texture: "grass"
+        }
+      },
+      {
+        type: "box",
+        options: {
+          width: 2,
+          height: 1,
+          depth: 1,
+          y: 0,
+          x: -3,
+          z: 0,
+          collisionFlags: 2,
+          texture: "grass"
+        }
+      },
+      {
+        type: "box",
+        options: {
+          width: 2,
+          height: 1,
+          depth: 1,
+          y: 0,
           x: -10,
           z: 0,
           collisionFlags: 2,
