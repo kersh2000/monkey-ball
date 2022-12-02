@@ -1,9 +1,10 @@
-import { ExtendedMesh, Scene3D } from '@enable3d/phaser-extension'
+import { Scene3D } from '@enable3d/phaser-extension'
 import Move from './functions/ballMovements';
 import { THREE } from '@enable3d/phaser-extension';
 import setControls from './functions/setControls';
 import updateControls from './functions/updateControls';
 import Stage from './functions/createStage';
+import Sound from './functions/createSounds';
 
 export default class MainScene extends Scene3D {
   constructor() {
@@ -16,67 +17,67 @@ export default class MainScene extends Scene3D {
     this.stageText;
     this.timerText;
     this.livesText;
+    this.winText;
     this.score = 0;
     this.stageNum = 0;
-    this.lives = 4;
-    this.soundOn = false;
+    this.lives = 3;
+    this.Sounds;
+    this.track = "jungle";
+    this.playing = false;
     this.cameraDirection = { face: 'no' }
+    document.title='Monkeyless Ball'
+    this.btn;
+    this.first = false;
+    // Button initialised
+    this.playing;
+    this.btn = document.createElement('button');
+    document.querySelector('body').appendChild(this.btn);
+    this.btn.textContent = 'Music';
   }
 
   init() {
     this.accessThirdDimension();
     this.third.load.preload('grass', '../../../assets/img/grass.jpg');
-    this.third.load.preload('goalTimer', "../../../assets/Goal_Green.webp")
   }
 
   create() {
 
     // this.third.physics.debug.enable()
 
-
-    // if (!this.soundOn){
-    //   // create an AudioListener and add it to the camera
-    //   const listener = new THREE.AudioListener();
-    //   this.third.camera.add( listener );
-
-    //   // create a global audio source
-    //   const themeSound = new THREE.Audio( listener );
-
-    //   // load a sound and set it as the Audio object's buffer
-    //   const audioLoader = new THREE.AudioLoader();
-    //   audioLoader.load( "../../../assets/sound/Jungle.wav", function( buffer ) {
-    //     themeSound.setBuffer( buffer );
-    //     themeSound.setLoop( true );
-    //     themeSound.setVolume( 0 );
-    //     themeSound.play()
-    //   });
-    // }
-   // this.third.sound.addEventListener("ended", function(e){sound.play();}, false); 
-
     // creates a nice scene
     this.third.warpSpeed('camera', 'sky');
     this.third.objects = [];
 
     // adds a sphere with physics
-    this.ball = this.third.physics.add.sphere({ radius: 0.5, x: 0, y:2 }, { lambert: { color: 0xff0000, transparent: true, opacity: 0.6 } }) //position of box init+colours
+    this.ball = this.third.physics.add.sphere({ radius: 0.5, x: 0, y: 2, z: 0}, { lambert: { color: 0xff0000, transparent: true, opacity: 0.5 } }) //position of box init+colours
 
     // Create stage / level
-    this.stage = new Stage(this.third, this.ball, this.stageNum);
+    this.stage = new Stage(this.third, this.ball, this.stageNum, this);
 
-    this.scoreText = this.add.text(10, 0, `Score: ${this.score}`, { fontSize: "40px", fill: "#000" })
-    this.instructionsText = this.add.text(10,0, "\n\nInstructions:  WASD to trigger camera movements  \n\nArrow keys to move ball",{fontSize: "20px", fill: "#000"})
-    this.stageText = this.add.text(window.innerWidth - 70, 20, `${this.stageNum + 1}`, { fontSize: "50px", fill: "#000000" })
+    this.scoreText = this.add.text(10, 80, `Score: ${this.score}`, { fontSize: "40px", fill: "#000000" })
+    // this.instructionsText = this.add.text(10,0, "\n\nInstructions:  WASD to trigger camera movements  \n\nArrow keys to move ball",{fontSize: "20px", fill: "#000"})
+    this.stageText = this.add.text(10, 0, `Stage: ${this.stageNum + 1}`, { fontSize: "40px", fill: "#000000" })
+    this.livesText = this.add.text(10, 40, `Lives: ${this.lives}`, { fontSize: "40px", fill: "#000000" })
 
     //importing keyboard inputs for movement of the monkeyball/character
     this.cursors = setControls(this.input, this.cameraDirection);
 
+    //regex and obj is the collision
     this.ball.body.on.collision( (obj, e) => {
       if (/banana/.test(obj.name)) {
         if (!obj.dead) {
           obj.dead = true;
           obj.visible = false;
+          if (this.Sounds.bananaAudio.isPlaying) {
+            this.Sounds.bananaAudio.stop();
+          }
+          this.Sounds.bananaAudio.play();
           this.score ++;
-          this.scoreText.setText(`Score: ${this.score}`); 
+          this.scoreText.setText(`Score: ${this.score}`);
+          if ((this.score % 20) === 0) {
+            this.lives ++;
+            this.livesText.setText(`Lives: ${this.lives}`);
+          }
         }
       }
     });
@@ -86,9 +87,9 @@ export default class MainScene extends Scene3D {
         if (!obj.dead) {
           obj.dead = true;
           this.stageNum ++;
-          this.stage.nextLevel();
+          this.Sounds.goalAudio.play();
           this.scene.restart();
-          this.stageText.setText(`${this.stageNum + 1}`);
+          this.stageText.setText(`Stage: ${this.stageNum + 1}`);
           this.cameraDirection.face = 'no'
         }
       }
@@ -96,10 +97,13 @@ export default class MainScene extends Scene3D {
 
 
     // LIGHTS!!!
-    this.third.lights.hemisphereLight({ intensity: 1})
+    let lightLevel1 = (this.stageNum > 9) ? 0.6 : 1;
+    let lightLevel2 = (this.stageNum > 9) ? 0.2 : 0.4;
+    let sunLevel = (this.stageNum > 9) ? 30 : 50;
+    this.third.lights.hemisphereLight({ intensity: lightLevel1})
 
-    this.third.directional = this.third.lights.directionalLight({ intensity: 0.5 })
-    this.third.directional.position.set(-30, 50, 30)
+    this.third.directional = this.third.lights.directionalLight({ intensity: lightLevel2 })
+    this.third.directional.position.set(-30, sunLevel, 30)
 
     this.third.renderer.shadowMap.type = THREE.PCFShadowMap;
 
@@ -116,6 +120,65 @@ export default class MainScene extends Scene3D {
     this.third.directional.shadow.camera.far = 35000;
     this.third.directional.shadow.bias = -0;
     // LIGHTS!!!
+
+    if (!this.first) {
+      this.Sounds = new Sound(this.third.camera);
+      this.btn.addEventListener('click', () => {
+        if (!this.playing) {
+          this.playing = true;
+          this.Sounds.jungleAudio.play();
+          this.btn.textContent = 'Mute Music';
+        } else {
+          this.Sounds.jungleAudio.pause();
+          this.playing = false;
+          this.btn.textContent = 'Music';
+        }
+      });
+      this.first = true;
+    }
+
+    if (this.stageNum === 0 && this.track !== "jungle") {
+      if (!this.playing) {
+        this.Sounds.newSong(this.stageNum);
+      } else {
+        console.log(this.playing)
+        this.Sounds.jungleAudio.stop();
+        this.Sounds.newSong(this.stageNum);
+        this.playing = false;
+        this.btn.textContent = 'Music';
+      }
+      this.track = "jungle";
+    } else if (this.stageNum === 5 && this.track === "jungle") {
+      if (!this.playing) {
+        this.Sounds.newSong(this.stageNum);
+      } else {
+        this.Sounds.jungleAudio.stop();
+        this.Sounds.newSong(this.stageNum);
+        this.playing = false;
+        this.btn.textContent = 'Music';
+      }
+      this.track = "ice";
+    } else if (this.stageNum === 9 && this.track === "ice") {
+      if (!this.playing) {
+        this.Sounds.newSong(this.stageNum);
+      } else {
+        this.Sounds.jungleAudio.stop();
+        this.Sounds.newSong(this.stageNum);
+        this.playing = false;
+        this.btn.textContent = 'Music';
+      }
+      this.track = "bonus";
+    } else if (this.stageNum === 10 && this.track === "bonus") {
+      if (!this.playing) {
+        this.Sounds.newSong(this.stageNum);
+      } else {
+        this.Sounds.jungleAudio.stop();
+        this.Sounds.newSong(this.stageNum);
+        this.playing = false;
+        this.btn.textContent = 'Music';
+      }
+      this.track = "storm";
+    }
 
   }
 
@@ -140,23 +203,36 @@ export default class MainScene extends Scene3D {
       this.ball.body.setAngularVelocity(0, 0, 0);
     }
 
+    // where ball falls of ledge
     if (this.ball.matrixWorld.elements[13] < -20){
       this.cameraDirection.face = 'no'
+      this.lives --;
+      if (this.lives === -1) {
+        this.stageNum = 0;
+        this.score = 0;
+        this.lives = 3;
+        this.Sounds.jungleAudio.stop();
+        this.Sounds.newSong(this.stageNum);
+        this.playing = false;
+        this.btn.textContent = 'Music';
+      }
       this.scene.restart();
     }
 
     this.third.objects.forEach( (obj) => {
-      const pos = { x: obj.box.matrixWorld.elements[12], y: obj.box.matrixWorld.elements[13], z: obj.box.matrixWorld.elements[14] }
-      obj.box.position[obj.meta.dir] += obj.meta.speed * obj.factor;
-      if (pos[obj.meta.dir] > obj.meta.edges[0]) {
-        obj.factor = -1;
-      } else if (pos[obj.meta.dir] < obj.meta.edges[1]) {
-        obj.factor = 1;
+      if (obj.meta.move.includes("translate")) {
+        const pos = { x: obj.box.matrixWorld.elements[12], y: obj.box.matrixWorld.elements[13], z: obj.box.matrixWorld.elements[14] }
+        obj.box.position[obj.meta.dir] += obj.meta.speed * obj.factor;
+        if (pos[obj.meta.dir] > obj.meta.edges[0]) {
+          obj.factor = -1;
+        } else if (pos[obj.meta.dir] < obj.meta.edges[1]) {
+          obj.factor = 1;
+        }
       }
-      // if (obj.meta.name === "box-2") {
-      //   console.log(`${pos.z} > ${obj.meta.edges[0]}`);
-      //   console.log(`${pos.z} < ${obj.meta.edges[1]}`);
-      // }
+      
+      if (obj.meta.move.includes("rotate")) {
+        obj.box.rotation[obj.meta.dir] += obj.meta.speed;
+      }
       obj.box.body.needUpdate = true;
     });
 
@@ -169,7 +245,6 @@ export default class MainScene extends Scene3D {
          z: this.ball.matrixWorld.elements[14] }
          , null, 2))
     }
-
   }
 }
 

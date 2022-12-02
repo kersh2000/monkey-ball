@@ -3,7 +3,7 @@ const common = require('./webpack.common')
 
 const dev = {
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   devServer: {
     open: true
   }
