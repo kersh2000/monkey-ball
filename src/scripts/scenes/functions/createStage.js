@@ -12,10 +12,12 @@ export default class Stage {
     console.log(this.numOfStages);
     this.stageNum = level;
 
-    if (this.stageNum < this.numOfStages) {
+    if (this.stageNum < this.numOfStages - 1) {
       const stage = this.fetchStage();
       this.loadStage(stage);
     } else {
+      const stage = this.fetchStage();
+      this.loadStage(stage);
       this.winScreen();
     }
 

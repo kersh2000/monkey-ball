@@ -54,10 +54,10 @@ export default class MainScene extends Scene3D {
     // Create stage / level
     this.stage = new Stage(this.third, this.ball, this.stageNum, this);
 
-    this.scoreText = this.add.text(10, 80, `Score: ${this.score}`, { fontSize: "40px", fill: "#000000" })
+    this.scoreText = this.add.text(10, 100, `Score: ${this.score}`, { fontSize: "40px", fill: "#000000", fontFamily: '"Press Start 2P"' })
     // this.instructionsText = this.add.text(10,0, "\n\nInstructions:  WASD to trigger camera movements  \n\nArrow keys to move ball",{fontSize: "20px", fill: "#000"})
-    this.stageText = this.add.text(10, 0, `Stage: ${this.stageNum + 1}`, { fontSize: "40px", fill: "#000000" })
-    this.livesText = this.add.text(10, 40, `Lives: ${this.lives}`, { fontSize: "40px", fill: "#000000" })
+    this.stageText = this.add.text(10, 0, `Stage: ${this.stageNum + 1}`, { fontSize: "50px", fill: "#000000", fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' })
+    this.livesText = this.add.text(10, 60, `Lives: ${this.lives}`, { fontSize: "40px", fill: "#000000", fontFamily: '"Press Start 2P"' })
 
     //importing keyboard inputs for movement of the monkeyball/character
     this.cursors = setControls(this.input, this.cameraDirection);
@@ -178,6 +178,10 @@ export default class MainScene extends Scene3D {
         this.btn.textContent = 'Music';
       }
       this.track = "storm";
+    }
+
+    if (this.stageNum === 13) {
+      this.third.haveSomeFun(100);
     }
 
   }
